@@ -107,10 +107,12 @@ int entregavel2() {
     for (int id: historico->listaCompras[idCliente1]) {
       printf("%s\n", historico->produtos[id].c_str());
     }
+
     printf("\nCompras do cliente 2:\n");
     for (int id: historico->listaCompras[idCliente2]) {
       printf("%s\n", historico->produtos[id].c_str());
     }
+
     printf("\nDistancia de Jaccard: %.3f\n\n", matrixSim->elements[idCliente1][idCliente2]);
   }
 

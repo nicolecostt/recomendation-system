@@ -14,19 +14,20 @@ IntMatrix *getIntMatrix(int linhas, int colunas) {
 
   matrix->elements = (int **)malloc(linhas * sizeof(int *));
   if (!matrix->elements) {
-    free(matrix);
     perror("getIntMatrix");
+    free(matrix);
     return NULL;
   }
+
   for (int i = 0; i < linhas; i++) {
     matrix->elements[i] = (int *)malloc(colunas * sizeof(int));
     if (!matrix->elements[i]) {
+      perror("getIntMatrix");
       for (int j = 0; j < i; j++) {
         free(matrix->elements[j]);
       }
       free(matrix->elements);
       free(matrix);
-      perror("getIntMatrix");
       return NULL;
     }
 
@@ -172,6 +173,7 @@ int processMatrices(FloatMatrix *matrixSim, Historico *historico) {
 
   IntMatrix *matrixComprasT = getIntMatrix(matrixCompras->colunas, matrixCompras->linhas);
   if (!matrixComprasT) {
+    freeIntMatrix(matrixCompras);
     perror("processMatrices");
     return 1;
   }
@@ -185,6 +187,8 @@ int processMatrices(FloatMatrix *matrixSim, Historico *historico) {
 
   IntMatrix *matrixInter = getIntMatrix(matrixCompras->linhas, matrixComprasT->colunas);
   if (!matrixInter) {
+    freeIntMatrix(matrixCompras);
+    freeIntMatrix(matrixComprasT);
     perror("processMatrices");
     return 1;
   }
