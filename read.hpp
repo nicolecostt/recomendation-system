@@ -1,3 +1,6 @@
+#ifndef READ
+#define READ
+
 #include <vector>
 #include <map>
 #include <list>
@@ -18,4 +21,6 @@ typedef struct {
   char nomeProduto[128];
 } Compra;
 
-int getHistorico(char *path_arquivo, Historico *historico);
+int getHistorico(Historico *historico ,char *path_arquivo);
+
+#endif

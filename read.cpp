@@ -1,7 +1,7 @@
-#include "read.h"
+#include "read.hpp"
 #include <stdio.h>
 
-int getHistorico(char *path_arquivo, Historico *historico) {
+int getHistorico(Historico *historico, char *path_arquivo) {
   FILE *arquivo;
   Compra compra;
   arquivo = fopen(path_arquivo, "r");

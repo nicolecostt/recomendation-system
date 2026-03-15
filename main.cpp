@@ -1,4 +1,4 @@
-#include "read.h"
+#include "read.hpp"
 #include <stdio.h>
 #include <string.h>
 
@@ -6,7 +6,7 @@ int entregavel1() {
   Historico *historico = new Historico;
   char pathArquivo[] = "data/dados_venda_cluster_0.csv";
 
-  if (getHistorico(pathArquivo, historico)) {
+  if (getHistorico(historico, pathArquivo)) {
     perror("Erro ao ler o csv");
   }
   
