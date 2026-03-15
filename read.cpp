@@ -5,8 +5,8 @@ int getHistorico(Historico *historico, char *path_arquivo) {
   FILE *arquivo;
   Compra compra;
   arquivo = fopen(path_arquivo, "r");
-  if (arquivo == NULL) {
-    perror("Erro ao abrir o arquivo.");
+  if (!arquivo) {
+    perror("fopen");
     return 1;
   }
 
@@ -17,7 +17,7 @@ int getHistorico(Historico *historico, char *path_arquivo) {
 
   fgets(cabecalho, sizeof(cabecalho), arquivo);
 
-  while (fscanf(arquivo, "%15[^,],%15[^,],%15[^,],%127[^\n]",
+  while (fscanf(arquivo, "%15[^,],%15[^,],%15[^,],%127[^\n]\n",
         compra.data,
         compra.codCliente,
         compra.codProduto,

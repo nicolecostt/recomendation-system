@@ -6,14 +6,26 @@
 typedef struct {
   int linhas;
   int colunas;
+  float **elements;
+} FloatMatrix;
+
+typedef struct {
+  int linhas;
+  int colunas;
   int **elements;
-} Matrix;
+} IntMatrix;
 
-Matrix *getMatrix(int linhas, int colunas);
+IntMatrix *getIntMatrix(int linhas, int colunas);
+FloatMatrix *getFloatMatrix(int linhas, int colunas);
 
-int getMatrixCompras(Matrix *matrixCompras, Historico *historico);
-int transposeMatrix(Matrix *matrixT, Matrix *matrix);
-int matrixMultiply(Matrix *matrixProd, Matrix *matrix1, Matrix *matrix2);
-int getMatrixSim(Matrix *matrixSim, Matrix *matrixInter);
+void freeIntMatrix(IntMatrix *matrix);
+void freeFloatMatrix(FloatMatrix *matrix);
+
+int getMatrixCompras(IntMatrix *matrixCompras, Historico *historico);
+int transposeMatrix(IntMatrix *matrixT, IntMatrix *matrix);
+int matrixMultiply(IntMatrix *matrixProd, IntMatrix *matrix1, IntMatrix *matrix2);
+int getMatrixSim(FloatMatrix *matrixSim, IntMatrix *matrixInter);
+
+int processMatrices(FloatMatrix *matrixSim, Historico *historico);
 
 #endif
