@@ -166,7 +166,7 @@ int processMatrices(FloatMatrix *matrixSim, Historico *historico) {
 
   if (getMatrixCompras(matrixCompras, historico)) {
     freeIntMatrix(matrixCompras);
-    fprintf(stderr, "processMatrices: matrixCompras() failed.\n");
+    fprintf(stderr, "processMatrices: matrixCompras failed.\n");
     return 1;
   }
 
@@ -179,7 +179,7 @@ int processMatrices(FloatMatrix *matrixSim, Historico *historico) {
   if (transposeMatrix(matrixComprasT, matrixCompras)) {
     freeIntMatrix(matrixCompras);
     freeIntMatrix(matrixComprasT);
-    fprintf(stderr, "processMatrices: transposeMatrix() failed.\n");
+    fprintf(stderr, "processMatrices: transposeMatrix failed.\n");
     return 1;
   }
 
@@ -193,7 +193,7 @@ int processMatrices(FloatMatrix *matrixSim, Historico *historico) {
     freeIntMatrix(matrixCompras);
     freeIntMatrix(matrixComprasT);
     freeIntMatrix(matrixInter);
-    fprintf(stderr, "processMatrices: matrixMultiply() failed.\n");
+    fprintf(stderr, "processMatrices: matrixMultiply failed.\n");
     return 1;
   }
 

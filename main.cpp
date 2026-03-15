@@ -13,7 +13,7 @@ int entregavel1() {
   }
 
   if (getHistorico(historico, pathArquivo)) {
-    fprintf(stderr, "entregavel1: Failed to get history.\n");
+    fprintf(stderr, "entregavel1: getHistorico failed.\n");
     delete historico;
     return 1;
   }
@@ -51,7 +51,7 @@ int entregavel2() {
 
   if (getHistorico(historico, pathArquivo)) {
     delete historico;
-    fprintf(stderr, "entregavel2: getHistorico() failed.\n");
+    fprintf(stderr, "entregavel2: getHistorico failed.\n");
     return 1;
   }
 
@@ -126,7 +126,7 @@ int main() {
   // }
 
   if (entregavel2()) {
-    fprintf(stderr, "main: entregavel2 Failed.\n");
+    fprintf(stderr, "main: entregavel2 failed.\n");
     return 1;
   }
 
