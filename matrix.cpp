@@ -54,6 +54,7 @@ FloatMatrix *getFloatMatrix(int linhas, int colunas) {
     perror("getFloatMatrix");
     return NULL;
   }
+
   for (int i = 0; i < linhas; i++) {
     matrix->elements[i] = (float *)malloc(colunas * sizeof(float));
     if (!matrix->elements[i]) {
@@ -74,18 +75,28 @@ FloatMatrix *getFloatMatrix(int linhas, int colunas) {
 }
 
 void freeIntMatrix(IntMatrix *matrix) {
+  if (!matrix) {
+    return;
+  }
+
   for (int i = 0; i < matrix->linhas; i++) {
     free(matrix->elements[i]);
   }
+
   free(matrix->elements);
   free(matrix);
   matrix = NULL;
 }
 
 void freeFloatMatrix(FloatMatrix *matrix) {
+  if (!matrix) {
+    return;
+  }
+
   for (int i = 0; i < matrix->linhas; i++) {
     free(matrix->elements[i]);
   }
+
   free(matrix->elements);
   free(matrix);
   matrix = NULL;
@@ -150,6 +161,9 @@ int getMatrixSim(FloatMatrix *matrixSim, IntMatrix *matrixInter) {
   }
 
   for (int i = 0; i < matrixInter->linhas; i++) {
+    if (matrixInter->elements[i][i] == 0) {
+      continue;
+    }
     for (int j = 0; j < matrixInter->colunas; j++) {
       matrixSim->elements[i][j] = 1 - (matrixInter->elements[i][j] / (float) matrixInter->elements[i][i]);
     }

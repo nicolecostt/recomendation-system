@@ -2,11 +2,12 @@
 #include "matrix.hpp"
 #include <stdio.h>
 #include <string.h>
+#include <new>
 
 int entregavel1() {
   char pathArquivo[] = "data/dados_venda_cluster_0.csv";
 
-  Historico *historico = new Historico;
+  Historico *historico = new (std::nothrow) Historico;
   if (!historico) {
     perror("historico");
     return 1;
