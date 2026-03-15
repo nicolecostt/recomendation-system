@@ -1,6 +1,7 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <string>
 
 typedef struct {
   std::vector<std::string> clientes;

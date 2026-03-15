@@ -1,6 +1,5 @@
 #include "read.h"
 #include <stdio.h>
-#include <stdlib.h>
 
 int getHistorico(char *path_arquivo, Historico *historico) {
   FILE *arquivo;
@@ -14,7 +13,11 @@ int getHistorico(char *path_arquivo, Historico *historico) {
   int clienteIndice;
   int produtoIndice;
 
-  while (fscanf(arquivo, "%15[^,],%15[^,],%15[^,],%127[^\n]\n",
+  char cabecalho[176];
+
+  fgets(cabecalho, sizeof(cabecalho), arquivo);
+
+  while (fscanf(arquivo, "%15[^,],%15[^,],%15[^,],%127[^\n]",
         compra.data,
         compra.codCliente,
         compra.codProduto,
