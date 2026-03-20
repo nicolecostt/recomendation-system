@@ -9,22 +9,14 @@ typedef struct {
   float **elements;
 } FloatMatrix;
 
-typedef struct {
-  int linhas;
-  int colunas;
-  int **elements;
-} IntMatrix;
-
-IntMatrix *getIntMatrix(int linhas, int colunas);
 FloatMatrix *getFloatMatrix(int linhas, int colunas);
 
-void freeIntMatrix(IntMatrix *matrix);
 void freeFloatMatrix(FloatMatrix *matrix);
 
-int getMatrixCompras(IntMatrix *matrixCompras, Historico *historico);
-int transposeMatrix(IntMatrix *matrixT, IntMatrix *matrix);
-int matrixMultiply(IntMatrix *matrixProd, IntMatrix *matrix1, IntMatrix *matrix2);
-int getMatrixSim(FloatMatrix *matrixSim, IntMatrix *matrixInter);
+int getMatrixCompras(FloatMatrix *matrixCompras, Historico *historico);
+int transposeMatrix(FloatMatrix *matrixT, FloatMatrix *matrix);
+int matrixMultiply(FloatMatrix *matrixProd, FloatMatrix *matrix1, FloatMatrix *matrix2);
+int getMatrixSim(FloatMatrix *matrixSim, FloatMatrix *matrixInter);
 
 int processMatrices(FloatMatrix *matrixSim, Historico *historico);
 

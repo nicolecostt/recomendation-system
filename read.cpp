@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 int getHistorico(Historico *historico, char *path_arquivo) {
-  FILE *arquivo;
+  FILE *arquivo = NULL;
   Compra compra;
   arquivo = fopen(path_arquivo, "r");
   if (!arquivo) {
@@ -40,10 +40,22 @@ int getHistorico(Historico *historico, char *path_arquivo) {
       produtoIndice = historico->mapProdutos[compra.codProduto];
     }
     
+    int contains = 0;
+    for (int i: historico->listaCompras[clienteIndice]) {
+      if (i == produtoIndice) {
+        contains = 1;
+        break;
+      }
+    }
+    if (contains) {
+      continue;
+    }
+
     historico->listaCompras[clienteIndice].push_back(produtoIndice);
   }
 
   fclose(arquivo);
+  arquivo = NULL;
 
   return 0;
 }

@@ -2,42 +2,6 @@
 #include <stdio.h>
 #include "matrix.hpp"
 
-IntMatrix *getIntMatrix(int linhas, int colunas) {
-  IntMatrix *matrix = (IntMatrix *)malloc(sizeof(IntMatrix));
-  if (!matrix) {
-    perror("getIntMatrix");
-    return NULL;
-  }
-
-  matrix->linhas = linhas;
-  matrix->colunas = colunas;
-
-  matrix->elements = (int **)malloc(linhas * sizeof(int *));
-  if (!matrix->elements) {
-    perror("getIntMatrix");
-    free(matrix);
-    return NULL;
-  }
-
-  for (int i = 0; i < linhas; i++) {
-    matrix->elements[i] = (int *)malloc(colunas * sizeof(int));
-    if (!matrix->elements[i]) {
-      perror("getIntMatrix");
-      for (int j = 0; j < i; j++) {
-        free(matrix->elements[j]);
-      }
-      free(matrix->elements);
-      free(matrix);
-      return NULL;
-    }
-
-    for (int j = 0; j < colunas; j++) {
-      matrix->elements[i][j] = 0;
-    }
-  }
-  return matrix;
-}
-
 FloatMatrix *getFloatMatrix(int linhas, int colunas) {
   FloatMatrix *matrix = (FloatMatrix *)malloc(sizeof(FloatMatrix));
   if (!matrix) {
@@ -50,20 +14,20 @@ FloatMatrix *getFloatMatrix(int linhas, int colunas) {
 
   matrix->elements = (float **)malloc(linhas * sizeof(float *));
   if (!matrix->elements) {
-    free(matrix);
     perror("getFloatMatrix");
+    free(matrix);
     return NULL;
   }
 
   for (int i = 0; i < linhas; i++) {
     matrix->elements[i] = (float *)malloc(colunas * sizeof(float));
     if (!matrix->elements[i]) {
+      perror("getFloatMatrix");
       for (int j = 0; j < i; j++) {
         free(matrix->elements[j]);
       }
       free(matrix->elements);
       free(matrix);
-      perror("getFloatMatrix");
       return NULL;
     }
 
@@ -72,20 +36,6 @@ FloatMatrix *getFloatMatrix(int linhas, int colunas) {
     }
   }
   return matrix;
-}
-
-void freeIntMatrix(IntMatrix *matrix) {
-  if (!matrix) {
-    return;
-  }
-
-  for (int i = 0; i < matrix->linhas; i++) {
-    free(matrix->elements[i]);
-  }
-
-  free(matrix->elements);
-  free(matrix);
-  matrix = NULL;
 }
 
 void freeFloatMatrix(FloatMatrix *matrix) {
@@ -102,7 +52,7 @@ void freeFloatMatrix(FloatMatrix *matrix) {
   matrix = NULL;
 }
 
-int getMatrixCompras(IntMatrix *matrixCompras, Historico *historico) {
+int getMatrixCompras(FloatMatrix *matrixCompras, Historico *historico) {
   if (matrixCompras->linhas != historico->clientes.size() ||
       matrixCompras->colunas != historico->produtos.size()) {
     fprintf(stderr, "getMatrixCompras: Dimension mismatch.\n");
@@ -118,7 +68,7 @@ int getMatrixCompras(IntMatrix *matrixCompras, Historico *historico) {
   return 0;
 }
 
-int transposeMatrix(IntMatrix *matrixT, IntMatrix *matrix) {
+int transposeMatrix(FloatMatrix *matrixT, FloatMatrix *matrix) {
   if (matrixT->linhas != matrix->colunas ||
       matrixT->colunas != matrix->linhas) {
     fprintf(stderr, "transposeMatrix: Dimension mismatch.\n");
@@ -134,7 +84,7 @@ int transposeMatrix(IntMatrix *matrixT, IntMatrix *matrix) {
   return 0;
 }
 
-int matrixMultiply(IntMatrix *matrixProd, IntMatrix *matrix1, IntMatrix *matrix2) {
+int matrixMultiply(FloatMatrix *matrixProd, FloatMatrix *matrix1, FloatMatrix *matrix2) {
   if (matrix2->linhas != matrix1->colunas ||
       matrixProd->linhas != matrix1->linhas ||
       matrixProd->colunas != matrix2->colunas) {
@@ -153,7 +103,7 @@ int matrixMultiply(IntMatrix *matrixProd, IntMatrix *matrix1, IntMatrix *matrix2
   return 0;
 }
 
-int getMatrixSim(FloatMatrix *matrixSim, IntMatrix *matrixInter) {
+int getMatrixSim(FloatMatrix *matrixSim, FloatMatrix *matrixInter) {
   if (matrixSim->linhas != matrixInter->linhas ||
       matrixSim->colunas != matrixInter->colunas) {
     fprintf(stderr, "getMatrixSim: Dimension mismatch.\n");
@@ -173,58 +123,58 @@ int getMatrixSim(FloatMatrix *matrixSim, IntMatrix *matrixInter) {
 }
 
 int processMatrices(FloatMatrix *matrixSim, Historico *historico) {
-  IntMatrix *matrixCompras = getIntMatrix(historico->clientes.size(), historico->produtos.size());
+  FloatMatrix *matrixCompras = getFloatMatrix(historico->clientes.size(), historico->produtos.size());
   if (!matrixCompras) {
     perror("processMatrices");
     return 1;
   }
 
   if (getMatrixCompras(matrixCompras, historico)) {
-    freeIntMatrix(matrixCompras);
     fprintf(stderr, "processMatrices: matrixCompras failed.\n");
+    freeFloatMatrix(matrixCompras);
     return 1;
   }
 
-  IntMatrix *matrixComprasT = getIntMatrix(matrixCompras->colunas, matrixCompras->linhas);
+  FloatMatrix *matrixComprasT = getFloatMatrix(matrixCompras->colunas, matrixCompras->linhas);
   if (!matrixComprasT) {
-    freeIntMatrix(matrixCompras);
     perror("processMatrices");
+    freeFloatMatrix(matrixCompras);
     return 1;
   }
 
   if (transposeMatrix(matrixComprasT, matrixCompras)) {
-    freeIntMatrix(matrixCompras);
-    freeIntMatrix(matrixComprasT);
     fprintf(stderr, "processMatrices: transposeMatrix failed.\n");
+    freeFloatMatrix(matrixCompras);
+    freeFloatMatrix(matrixComprasT);
     return 1;
   }
 
-  IntMatrix *matrixInter = getIntMatrix(matrixCompras->linhas, matrixComprasT->colunas);
+  FloatMatrix *matrixInter = getFloatMatrix(matrixCompras->linhas, matrixComprasT->colunas);
   if (!matrixInter) {
-    freeIntMatrix(matrixCompras);
-    freeIntMatrix(matrixComprasT);
     perror("processMatrices");
+    freeFloatMatrix(matrixCompras);
+    freeFloatMatrix(matrixComprasT);
     return 1;
   }
 
   if (matrixMultiply(matrixInter, matrixCompras, matrixComprasT)) {
-    freeIntMatrix(matrixCompras);
-    freeIntMatrix(matrixComprasT);
-    freeIntMatrix(matrixInter);
     fprintf(stderr, "processMatrices: matrixMultiply failed.\n");
+    freeFloatMatrix(matrixCompras);
+    freeFloatMatrix(matrixComprasT);
+    freeFloatMatrix(matrixInter);
     return 1;
   }
 
-  freeIntMatrix(matrixCompras);
-  freeIntMatrix(matrixComprasT);
+  freeFloatMatrix(matrixCompras);
+  freeFloatMatrix(matrixComprasT);
 
   if (getMatrixSim(matrixSim, matrixInter)) {
-    freeIntMatrix(matrixInter);
     fprintf(stderr, "processMatrices: getMatrixSim failed.\n");
+    freeFloatMatrix(matrixInter);
     return 1;
   }
   
-  freeIntMatrix(matrixInter);
+  freeFloatMatrix(matrixInter);
 
   return 0;
 }
