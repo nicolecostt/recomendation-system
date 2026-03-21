@@ -1,5 +1,6 @@
 #include "read.hpp"
 #include "matrix.hpp"
+#include "recommend.hpp"
 #include <stdio.h>
 #include <string.h>
 #include <new>
@@ -123,13 +124,77 @@ int entregavel2() {
   return 0;
 }
 
+int entregavel3() {
+  char pathArquivo[] = "data/dados_venda_cluster_0.csv";
+
+  Historico *historico = new Historico;
+  if (!historico) {
+    perror("entregavel2");
+    return 1;
+  }
+
+  if (getHistorico(historico, pathArquivo)) {
+    delete historico;
+    fprintf(stderr, "entregavel2: getHistorico failed.\n");
+    return 1;
+  }
+
+  FloatMatrix *matrixSim = getFloatMatrix(historico->clientes.size(), historico->clientes.size());
+  if (!matrixSim) {
+    perror("entregavel2");
+    delete historico;
+    return 1;
+  }
+
+  if (processMatrices(matrixSim, historico)) {
+    delete historico;
+    freeFloatMatrix(matrixSim);
+    fprintf(stderr, "entregavel2: processMatrices failed.\n");
+    return 1;
+  }
+
+  int k;
+  char cliente[64];
+  int idCliente;
+  std::vector<Produto> *recomendados = new (std::nothrow) std::vector<Produto>;
+
+  printf("Digite quantos produtos recomendar por cliente:\n-> ");
+  scanf("%d", &k);
+  printf("\n");
+  
+  for (int i = 0; i < 3; i++) {
+    printf("Digite o codigo do cliente %d:\n-> ", i + 1);
+    scanf(" %63[^\n]", cliente);
+    printf("\n");
+    idCliente = historico->mapClientes[cliente];
+    processRecommend(recomendados, idCliente, matrixSim, historico, k);
+    printf("Produtos recomendados:\n");
+    for (int j = 0; j < recomendados->size(); j++) {
+      printf("%s\n", historico->produtos[(*recomendados)[j].idProduto].c_str());
+    }
+    printf("\n");
+
+    delete recomendados;
+    std::vector<Produto> *recomendados = new (std::nothrow) std::vector<Produto>;
+  }
+
+  freeFloatMatrix(matrixSim);
+  delete historico;
+  return 0;
+}
+
 int main() {
   // if (entregavel1()) {
   //   fprintf(stderr, "main: entregavel1 Failed.\n");
   //   return 1;
   // }
 
-  if (entregavel2()) {
+  // if (entregavel2()) {
+  //   fprintf(stderr, "main: entregavel2 failed.\n");
+  //   return 1;
+  // }
+
+  if (entregavel3()) {
     fprintf(stderr, "main: entregavel2 failed.\n");
     return 1;
   }
