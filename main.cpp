@@ -157,7 +157,12 @@ int entregavel3() {
   char cliente[64];
   int idCliente;
   std::vector<Produto> *recomendados = new (std::nothrow) std::vector<Produto>;
-
+  if (!recomendados) {
+    freeFloatMatrix(matrixSim);
+    delete historico;
+    return 1;
+  }
+  
   printf("Digite quantos produtos recomendar por cliente:\n-> ");
   scanf("%d", &k);
   printf("\n");
@@ -166,17 +171,26 @@ int entregavel3() {
     printf("Digite o codigo do cliente %d:\n-> ", i + 1);
     scanf(" %63[^\n]", cliente);
     printf("\n");
+  
     idCliente = historico->mapClientes[cliente];
     processRecommend(recomendados, idCliente, matrixSim, historico, k);
+  
     printf("Produtos recomendados:\n");
-    for (int j = 0; j < recomendados->size(); j++) {
+    for (int j = 0; j < (int)recomendados->size(); j++) {
       printf("%s\n", historico->produtos[(*recomendados)[j].idProduto].c_str());
     }
     printf("\n");
-
+  
     delete recomendados;
-    std::vector<Produto> *recomendados = new (std::nothrow) std::vector<Produto>;
+    recomendados = new (std::nothrow) std::vector<Produto>;
+    if (!recomendados) {
+      freeFloatMatrix(matrixSim);
+      delete historico;
+      return 1;
+    }
   }
+  
+  delete recomendados;
 
   freeFloatMatrix(matrixSim);
   delete historico;
