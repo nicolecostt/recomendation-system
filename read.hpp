@@ -21,6 +21,6 @@ typedef struct {
   char nomeProduto[128];
 } Compra;
 
-int getHistorico(Historico *historico ,char *path_arquivo);
+int getHistorico(Historico *historico ,char *path_arquivo, int maxClientes);
 
 #endif

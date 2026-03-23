@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <new>
+#include <ctime>
 
 int entregavel1() {
   char pathArquivo[] = "data/dados_venda_cluster_0.csv";
@@ -14,7 +15,7 @@ int entregavel1() {
     return 1;
   }
 
-  if (getHistorico(historico, pathArquivo)) {
+  if (getHistorico(historico, pathArquivo, -1)) {
     fprintf(stderr, "entregavel1: getHistorico failed.\n");
     delete historico;
     return 1;
@@ -44,6 +45,7 @@ int entregavel1() {
 
 int entregavel2() {
   char pathArquivo[] = "data/dados_venda_cluster_0.csv";
+  int fast = 0;
 
   Historico *historico = new Historico;
   if (!historico) {
@@ -51,7 +53,7 @@ int entregavel2() {
     return 1;
   }
 
-  if (getHistorico(historico, pathArquivo)) {
+  if (getHistorico(historico, pathArquivo, -1)) {
     delete historico;
     fprintf(stderr, "entregavel2: getHistorico failed.\n");
     return 1;
@@ -64,7 +66,7 @@ int entregavel2() {
     return 1;
   }
 
-  if (processMatrices(matrixSim, historico)) {
+  if (processMatrices(matrixSim, historico, fast)) {
     delete historico;
     freeFloatMatrix(matrixSim);
     fprintf(stderr, "entregavel2: processMatrices failed.\n");
@@ -126,6 +128,7 @@ int entregavel2() {
 
 int entregavel3() {
   char pathArquivo[] = "data/dados_venda_cluster_0.csv";
+  int fast = 0;
 
   Historico *historico = new Historico;
   if (!historico) {
@@ -133,7 +136,7 @@ int entregavel3() {
     return 1;
   }
 
-  if (getHistorico(historico, pathArquivo)) {
+  if (getHistorico(historico, pathArquivo, -1)) {
     delete historico;
     fprintf(stderr, "entregavel2: getHistorico failed.\n");
     return 1;
@@ -146,7 +149,7 @@ int entregavel3() {
     return 1;
   }
 
-  if (processMatrices(matrixSim, historico)) {
+  if (processMatrices(matrixSim, historico, fast)) {
     delete historico;
     freeFloatMatrix(matrixSim);
     fprintf(stderr, "entregavel2: processMatrices failed.\n");
@@ -197,20 +200,107 @@ int entregavel3() {
   return 0;
 }
 
-int main() {
-  // if (entregavel1()) {
-  //   fprintf(stderr, "main: entregavel1 Failed.\n");
-  //   return 1;
-  // }
+int entregavel4() {
+  char pathArquivo[] = "data/dados_venda_cluster_0.csv";
+  int maxClientes;
 
-  // if (entregavel2()) {
-  //   fprintf(stderr, "main: entregavel2 failed.\n");
-  //   return 1;
-  // }
+  printf("Digite o tamanho da matriz (-1 para ler tudo):\n-> ");
+  scanf("%d", &maxClientes);
 
-  if (entregavel3()) {
-    fprintf(stderr, "main: entregavel2 failed.\n");
+  Historico *historico = new Historico;
+  if (!historico) {
+    perror("entregavel2");
     return 1;
+  }
+
+  if (getHistorico(historico, pathArquivo, maxClientes)) {
+    delete historico;
+    fprintf(stderr, "entregavel2: getHistorico failed.\n");
+    return 1;
+  }
+
+  FloatMatrix *matrixSim0 = getFloatMatrix(historico->clientes.size(), historico->clientes.size());
+  if (!matrixSim0) {
+    perror("entregavel2");
+    delete historico;
+    return 1;
+  }
+
+  FloatMatrix *matrixSim1 = getFloatMatrix(historico->clientes.size(), historico->clientes.size());
+  if (!matrixSim1) {
+    perror("entregavel2");
+    delete historico;
+    return 1;
+  }
+
+  clock_t t1 = clock();
+
+  if (processMatrices(matrixSim0, historico, 0)) {
+    delete historico;
+    freeFloatMatrix(matrixSim0);
+    fprintf(stderr, "entregavel2: processMatrices failed.\n");
+    return 1;
+  }
+
+  clock_t t2 = clock();
+
+  if (processMatrices(matrixSim1, historico, 1)) {
+    delete historico;
+    freeFloatMatrix(matrixSim1);
+    fprintf(stderr, "entregavel2: processMatrices failed.\n");
+    return 1;
+  }
+
+  clock_t t3 = clock();
+
+  double slowTime = (double)(t2 - t1) / CLOCKS_PER_SEC;
+  double fastTime = (double)(t3 - t2) / CLOCKS_PER_SEC;
+
+  printf("\n");
+  printf("Tempo padrao:    %lf\n", slowTime);
+  printf("Tempo adaptado:  %lf\n", fastTime);
+
+  delete historico;
+  freeFloatMatrix(matrixSim0);
+  freeFloatMatrix(matrixSim1);
+
+  return 0;
+}
+
+int main() {
+  int entregavel;
+  printf("Digite qual entregavel executar (1 - 4):\n-> ");
+  scanf("%d", &entregavel);
+  printf("\n");
+
+  switch (entregavel) {
+    case 1:
+      if (entregavel1()) {
+        fprintf(stderr, "main: entregavel1 Failed.\n");
+        return 1;
+      }
+      break;
+
+    case 2:
+      if (entregavel2()) {
+        fprintf(stderr, "main: entregavel2 failed.\n");
+        return 1;
+      }
+      break;
+
+    case 3:
+      if (entregavel3()) {
+        fprintf(stderr, "main: entregavel3 failed.\n");
+        return 1;
+      }
+      break;
+
+    case 4:
+      if (entregavel4()) {
+        fprintf(stderr, "main: entregavel4 failed.\n");
+        return 1;
+      }
+      break;
   }
 
   return 0;

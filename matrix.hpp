@@ -18,6 +18,8 @@ int transposeMatrix(FloatMatrix *matrixT, FloatMatrix *matrix);
 int matrixMultiply(FloatMatrix *matrixProd, FloatMatrix *matrix1, FloatMatrix *matrix2);
 int getMatrixSim(FloatMatrix *matrixSim, FloatMatrix *matrixInter);
 
-int processMatrices(FloatMatrix *matrixSim, Historico *historico);
+int fastMatrixInter(FloatMatrix *matrixInter, FloatMatrix *matrixCompras);
+
+int processMatrices(FloatMatrix *matrixSim, Historico *historico, int fast);
 
 #endif

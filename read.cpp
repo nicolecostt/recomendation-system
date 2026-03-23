@@ -1,7 +1,7 @@
 #include "read.hpp"
 #include <stdio.h>
 
-int getHistorico(Historico *historico, char *path_arquivo) {
+int getHistorico(Historico *historico, char *path_arquivo, int maxClientes) {
   FILE *arquivo = NULL;
   Compra compra;
   arquivo = fopen(path_arquivo, "r");
@@ -24,6 +24,10 @@ int getHistorico(Historico *historico, char *path_arquivo) {
         compra.nomeProduto) == 4) {
 
     if (historico->mapClientes.find(compra.codCliente) == historico->mapClientes.end()) {
+      if (historico->clientes.size() == maxClientes) {
+        continue;
+      }
+
       clienteIndice = historico->clientes.size();
       historico->clientes.push_back(compra.codCliente);
       historico->mapClientes[compra.codCliente] = clienteIndice;

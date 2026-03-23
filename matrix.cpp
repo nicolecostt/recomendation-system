@@ -68,6 +68,26 @@ int getMatrixCompras(FloatMatrix *matrixCompras, Historico *historico) {
   return 0;
 }
 
+int fastMatrixInter(FloatMatrix *matrixInter, FloatMatrix *matrixCompras) {
+  if (matrixInter->linhas != matrixCompras->linhas ||
+      matrixInter->colunas != matrixCompras->linhas) {
+    fprintf(stderr, "fastMatrixInter: Dimension mismatch.\n");
+    return 1;
+  }
+
+  for (int i = 0; i < matrixInter->linhas; i++) {
+    for (int j = 0; j < i; j++) {
+      matrixCompras->elements[i][i] += matrixCompras->elements[i][j];
+      for (int k = 0; k < matrixInter->linhas; k++) {
+        matrixInter->elements[i][j] += matrixCompras->elements[i][k] * matrixCompras->elements[j][k];
+      }
+      matrixInter->elements[j][i] = matrixInter->elements[i][j];
+    }
+  }
+  
+  return 0;
+}
+
 int transposeMatrix(FloatMatrix *matrixT, FloatMatrix *matrix) {
   if (matrixT->linhas != matrix->colunas ||
       matrixT->colunas != matrix->linhas) {
@@ -122,7 +142,7 @@ int getMatrixSim(FloatMatrix *matrixSim, FloatMatrix *matrixInter) {
   return 0;
 }
 
-int processMatrices(FloatMatrix *matrixSim, Historico *historico) {
+int processMatrices(FloatMatrix *matrixSim, Historico *historico, int fast) {
   FloatMatrix *matrixCompras = getFloatMatrix(historico->clientes.size(), historico->produtos.size());
   if (!matrixCompras) {
     perror("processMatrices");
@@ -135,38 +155,50 @@ int processMatrices(FloatMatrix *matrixSim, Historico *historico) {
     return 1;
   }
 
-  FloatMatrix *matrixComprasT = getFloatMatrix(matrixCompras->colunas, matrixCompras->linhas);
-  if (!matrixComprasT) {
-    perror("processMatrices");
-    freeFloatMatrix(matrixCompras);
-    return 1;
-  }
-
-  if (transposeMatrix(matrixComprasT, matrixCompras)) {
-    fprintf(stderr, "processMatrices: transposeMatrix failed.\n");
-    freeFloatMatrix(matrixCompras);
-    freeFloatMatrix(matrixComprasT);
-    return 1;
-  }
-
-  FloatMatrix *matrixInter = getFloatMatrix(matrixCompras->linhas, matrixComprasT->colunas);
+  FloatMatrix *matrixInter = getFloatMatrix(matrixCompras->linhas, matrixCompras->linhas);
   if (!matrixInter) {
     perror("processMatrices");
     freeFloatMatrix(matrixCompras);
-    freeFloatMatrix(matrixComprasT);
     return 1;
   }
 
-  if (matrixMultiply(matrixInter, matrixCompras, matrixComprasT)) {
-    fprintf(stderr, "processMatrices: matrixMultiply failed.\n");
-    freeFloatMatrix(matrixCompras);
+  if (fast) {
+    if (fastMatrixInter(matrixInter, matrixCompras)) {
+      fprintf(stderr, "processMatrices: fastMatrixInter failed.\n");
+      freeFloatMatrix(matrixCompras);
+      freeFloatMatrix(matrixInter);
+      return 1;
+    }
+
+  } else {
+    FloatMatrix *matrixComprasT = getFloatMatrix(matrixCompras->colunas, matrixCompras->linhas);
+    if (!matrixComprasT) {
+      perror("processMatrices");
+      freeFloatMatrix(matrixCompras);
+      freeFloatMatrix(matrixInter);
+      return 1;
+    }
+
+    if (transposeMatrix(matrixComprasT, matrixCompras)) {
+      fprintf(stderr, "processMatrices: transposeMatrix failed.\n");
+      freeFloatMatrix(matrixCompras);
+      freeFloatMatrix(matrixInter);
+      freeFloatMatrix(matrixComprasT);
+      return 1;
+    }
+
+    if (matrixMultiply(matrixInter, matrixCompras, matrixComprasT)) {
+      fprintf(stderr, "processMatrices: matrixMultiply failed.\n");
+      freeFloatMatrix(matrixCompras);
+      freeFloatMatrix(matrixInter);
+      freeFloatMatrix(matrixComprasT);
+      return 1;
+    }
+
     freeFloatMatrix(matrixComprasT);
-    freeFloatMatrix(matrixInter);
-    return 1;
   }
 
   freeFloatMatrix(matrixCompras);
-  freeFloatMatrix(matrixComprasT);
 
   if (getMatrixSim(matrixSim, matrixInter)) {
     fprintf(stderr, "processMatrices: getMatrixSim failed.\n");
