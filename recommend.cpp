@@ -9,7 +9,6 @@ static bool compararRanking(const Produto &a, const Produto &b) {
 
 int getVizinhos(std::list<int> *vizinhos, int idCliente, FloatMatrix *matrixSim) {
   for (int i = 0; i < matrixSim->linhas; i++) {
-    // CORRIGIDO: excluir o proprio cliente (diagonal = 0, que e < 1 e zeraria todos os rankings)
     if (i != idCliente && matrixSim->elements[idCliente][i] < 1) {
       vizinhos->push_back(i);
     }
@@ -19,23 +18,24 @@ int getVizinhos(std::list<int> *vizinhos, int idCliente, FloatMatrix *matrixSim)
 }
 
 int getRanking(std::vector<float> *R, int idCliente, std::list<int> *vizinhos, FloatMatrix *matrixSim, Historico *historico) {
-  // CORRIGIDO: iterar sobre produtos que o VIZINHO comprou, nao todos os produtos
-  // CORRIGIDO: multiplicar pela SIMILARIDADE (1 - distancia), nao pela distancia
-  for (int i : *vizinhos) {
-    float similaridade = 1.0f - matrixSim->elements[idCliente][i];
+  int comprou;
 
-    for (int j : historico->listaCompras[i]) {
-      bool clienteComprou = false;
+  for (int i : *vizinhos) {
+    for (int j = 0; j < (int)R->size(); j++) {
+      comprou = 0;
+
       for (int k : historico->listaCompras[idCliente]) {
         if (k == j) {
-          clienteComprou = true;
+          comprou = 1;
           break;
         }
       }
 
-      if (!clienteComprou) {
-        (*R)[j] *= similaridade;
+      if (comprou) {
+        continue;
       }
+
+      (*R)[j] *= matrixSim->elements[idCliente][i];
     }
   }
 
