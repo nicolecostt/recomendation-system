@@ -4,7 +4,7 @@
 #include <algorithm>
 
 static bool compararRanking(const Produto &a, const Produto &b) {
-  return a.ranking > b.ranking;
+  return a.ranking < b.ranking;
 }
 
 int getVizinhos(std::list<int> *vizinhos, int idCliente, FloatMatrix *matrixSim) {
