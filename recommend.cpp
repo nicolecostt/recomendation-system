@@ -9,7 +9,8 @@ static bool compararRanking(const Produto &a, const Produto &b) {
 
 int getVizinhos(std::list<int> *vizinhos, int idCliente, FloatMatrix *matrixSim) {
   for (int i = 0; i < matrixSim->linhas; i++) {
-    if (matrixSim->elements[idCliente][i] < 1) {
+    // CORRIGIDO: excluir o proprio cliente (diagonal = 0, que e < 1 e zeraria todos os rankings)
+    if (i != idCliente && matrixSim->elements[idCliente][i] < 1) {
       vizinhos->push_back(i);
     }
   }

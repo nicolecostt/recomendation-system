@@ -76,12 +76,17 @@ int fastMatrixInter(FloatMatrix *matrixInter, FloatMatrix *matrixCompras) {
   }
 
   for (int i = 0; i < matrixInter->linhas; i++) {
-    for (int j = 0; j < i; j++) {
-      matrixCompras->elements[i][i] += matrixCompras->elements[i][j];
-      for (int k = 0; k < matrixInter->linhas; k++) {
-        matrixInter->elements[i][j] += matrixCompras->elements[i][k] * matrixCompras->elements[j][k];
+    // CORRIGIDO: incluir j == i para calcular a diagonal (total de compras de cada cliente)
+    for (int j = 0; j <= i; j++) {
+      float soma = 0;
+      // CORRIGIDO: iterar sobre produtos (colunas de matrixCompras), nao sobre clientes
+      // CORRIGIDO: usar variavel local 'soma' em vez de acumular em matrixInter diretamente,
+      //            e remover linha que modificava matrixCompras corrompendo calculos seguintes
+      for (int k = 0; k < matrixCompras->colunas; k++) {
+        soma += matrixCompras->elements[i][k] * matrixCompras->elements[j][k];
       }
-      matrixInter->elements[j][i] = matrixInter->elements[i][j];
+      matrixInter->elements[i][j] = soma;
+      matrixInter->elements[j][i] = soma; // aproveita simetria: S[i][j] = S[j][i]
     }
   }
   
