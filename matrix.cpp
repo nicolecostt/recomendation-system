@@ -1,6 +1,6 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include "matrix.hpp"
+#include <stdio.h>
+#include <stdlib.h>
 
 FloatMatrix *getFloatMatrix(int linhas, int colunas) {
   FloatMatrix *matrix = (FloatMatrix *)malloc(sizeof(FloatMatrix));
@@ -68,7 +68,7 @@ int getMatrixCompras(FloatMatrix *matrixCompras, Historico *historico) {
   return 0;
 }
 
-int fastMatrixInter(FloatMatrix *matrixInter, FloatMatrix *matrixCompras) {
+int fastMatrixInter(FloatMatrix *matrixInter, FloatMatrix *matrixCompras, Historico *historico) {
   if (matrixInter->linhas != matrixCompras->linhas ||
       matrixInter->colunas != matrixCompras->linhas) {
     fprintf(stderr, "fastMatrixInter: Dimension mismatch.\n");
@@ -76,20 +76,15 @@ int fastMatrixInter(FloatMatrix *matrixInter, FloatMatrix *matrixCompras) {
   }
 
   for (int i = 0; i < matrixInter->linhas; i++) {
-    // CORRIGIDO: incluir j == i para calcular a diagonal (total de compras de cada cliente)
-    for (int j = 0; j <= i; j++) {
-      float soma = 0;
-      // CORRIGIDO: iterar sobre produtos (colunas de matrixCompras), nao sobre clientes
-      // CORRIGIDO: usar variavel local 'soma' em vez de acumular em matrixInter diretamente,
-      //            e remover linha que modificava matrixCompras corrompendo calculos seguintes
+    matrixInter->elements[i][i] = historico->listaCompras[i].size();
+    for (int j = 0; j < i; j++) {
       for (int k = 0; k < matrixCompras->colunas; k++) {
-        soma += matrixCompras->elements[i][k] * matrixCompras->elements[j][k];
+        matrixInter->elements[i][j] += matrixCompras->elements[i][k] * matrixCompras->elements[j][k];
       }
-      matrixInter->elements[i][j] = soma;
-      matrixInter->elements[j][i] = soma; // aproveita simetria: S[i][j] = S[j][i]
+      matrixInter->elements[j][i] = matrixInter->elements[i][j];
     }
   }
-  
+
   return 0;
 }
 
@@ -140,7 +135,7 @@ int getMatrixSim(FloatMatrix *matrixSim, FloatMatrix *matrixInter) {
       continue;
     }
     for (int j = 0; j < matrixInter->colunas; j++) {
-      matrixSim->elements[i][j] = 1 - (matrixInter->elements[i][j] / (float) matrixInter->elements[i][i]);
+      matrixSim->elements[i][j] = 1 - (matrixInter->elements[i][j] / (float)matrixInter->elements[i][i]);
     }
   }
 
@@ -168,7 +163,7 @@ int processMatrices(FloatMatrix *matrixSim, Historico *historico, int fast) {
   }
 
   if (fast) {
-    if (fastMatrixInter(matrixInter, matrixCompras)) {
+    if (fastMatrixInter(matrixInter, matrixCompras, historico)) {
       fprintf(stderr, "processMatrices: fastMatrixInter failed.\n");
       freeFloatMatrix(matrixCompras);
       freeFloatMatrix(matrixInter);
@@ -210,7 +205,7 @@ int processMatrices(FloatMatrix *matrixSim, Historico *historico, int fast) {
     freeFloatMatrix(matrixInter);
     return 1;
   }
-  
+
   freeFloatMatrix(matrixInter);
 
   return 0;
