@@ -2,34 +2,45 @@ import csv
 import pyrecommend
 
 def carregar_historico(path, max_clientes=-1):
-    historico = pyrecommend.Historico()
+    clientes = []
+    mapClientes = {}
+    produtos = []
+    mapProdutos = {}
+    listaCompras = []
 
     with open(path, newline='', encoding='utf-8') as f:
         leitor = csv.reader(f)
-        next(leitor)  # pula cabeçalho
+        next(leitor)
 
         for linha in leitor:
             data, cod_cliente, cod_produto, nome_produto = linha
 
-            if cod_cliente not in historico.mapClientes:
-                if max_clientes != -1 and len(historico.clientes) >= max_clientes:
+            if cod_cliente not in mapClientes:
+                if max_clientes != -1 and len(clientes) >= max_clientes:
                     continue
-                indice_cliente = len(historico.clientes)
-                historico.clientes.append(cod_cliente)
-                historico.mapClientes[cod_cliente] = indice_cliente
-                historico.listaCompras.append([])
+                indice_cliente = len(clientes)
+                clientes.append(cod_cliente)
+                mapClientes[cod_cliente] = indice_cliente
+                listaCompras.append([])
             else:
-                indice_cliente = historico.mapClientes[cod_cliente]
+                indice_cliente = mapClientes[cod_cliente]
 
-            if cod_produto not in historico.mapProdutos:
-                indice_produto = len(historico.produtos)
-                historico.produtos.append(nome_produto)
-                historico.mapProdutos[cod_produto] = indice_produto
+            if cod_produto not in mapProdutos:
+                indice_produto = len(produtos)
+                produtos.append(nome_produto)
+                mapProdutos[cod_produto] = indice_produto
             else:
-                indice_produto = historico.mapProdutos[cod_produto]
+                indice_produto = mapProdutos[cod_produto]
 
-            if indice_produto not in historico.listaCompras[indice_cliente]:
-                historico.listaCompras[indice_cliente].append(indice_produto)
+            if indice_produto not in listaCompras[indice_cliente]:
+                listaCompras[indice_cliente].append(indice_produto)
+
+    historico = pyrecommend.Historico()
+    historico.clientes = clientes
+    historico.mapClientes = mapClientes
+    historico.produtos = produtos
+    historico.mapProdutos = mapProdutos
+    historico.listaCompras = listaCompras
 
     return historico
 
