@@ -34,7 +34,7 @@ def carregar_historico(path, max_clientes=-1):
     return historico
 
 def entregavel1():
-    historico = carregar_historico("data/dados_venda_cluster_0.csv")
+    historico = carregar_historico("../data/dados_venda_cluster_0.csv")
     cliente = input("Digite o codigo do cliente (-1 para sair):\n-> ")
     while cliente != "-1":
         if cliente not in historico.mapClientes:
@@ -47,7 +47,7 @@ def entregavel1():
         cliente = input("Digite o codigo do cliente (-1 para sair):\n-> ")
 
 def entregavel2():
-    historico = carregar_historico("data/dados_venda_cluster_0.csv")
+    historico = carregar_historico("../data/dados_venda_cluster_0.csv")
     matrix_sim = pyrecommend.calcular_similaridade(historico, 0)
     cliente = input("Digite o codigo do cliente (-1 para sair):\n-> ")
     while cliente != "-1":
@@ -73,7 +73,7 @@ def entregavel2():
         cliente = input("Digite o codigo do cliente (-1 para sair):\n-> ")
 
 def entregavel3():
-    historico = carregar_historico("data/dados_venda_cluster_0.csv")
+    historico = carregar_historico("../data/dados_venda_cluster_0.csv")
     matrix_sim = pyrecommend.calcular_similaridade(historico, 0)
     k = int(input("Digite quantos produtos recomendar por cliente:\n-> "))
     print()
@@ -89,7 +89,7 @@ def entregavel3():
 
 def entregavel4():
     max_clientes = int(input("Digite o tamanho da matriz (-1 para ler tudo):\n-> "))
-    historico = carregar_historico("data/dados_venda_cluster_0.csv", max_clientes)
+    historico = carregar_historico("../data/dados_venda_cluster_0.csv", max_clientes)
     tempo_padrao, tempo_otimizado = pyrecommend.benchmark(historico)
     print(f"\nTempo padrao:    {tempo_padrao}")
     print(f"Tempo adaptado:  {tempo_otimizado}")

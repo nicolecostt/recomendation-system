@@ -4,3 +4,6 @@
 
 integracao/build/
 *.so
+
+__pycache__/
+venv/
